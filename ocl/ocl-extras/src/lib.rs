@@ -2,7 +2,7 @@ extern crate fil_ocl as ocl;
 extern crate rand;
 extern crate num_traits;
 extern crate futures;
-#[macro_use] extern crate failure;
+extern crate thiserror;
 
 pub mod sub_buffer_pool;
 pub mod command_graph;

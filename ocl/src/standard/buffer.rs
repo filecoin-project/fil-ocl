@@ -3,6 +3,7 @@
 use std;
 use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut, Range};
+use thiserror::Error;
 use crate::core::{self, Error as OclCoreError, Result as OclCoreResult, OclPrm, Mem as MemCore,
     MemFlags, MemInfo, MemInfoResult, BufferRegion, MapFlags, AsMem, MemCmdRw, MemCmdAll,
     ClNullEventPtr};
@@ -28,27 +29,20 @@ fn check_len(mem_len: usize, data_len: usize, offset: usize) -> OclResult<()> {
 
 
 /// A buffer command error.
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum BufferCmdError {
-    #[fail(display = "A rectangular map is not a valid operation. \
+    #[error("A rectangular map is not a valid operation. \
         Please use the default shape, linear.")]
     RectUnavailable,
-    #[fail(display = "No queue specified.")]
+    #[error("No queue specified.")]
     NoQueue,
-    #[fail(display = "Buffer already mapped.")]
+    #[error("Buffer already mapped.")]
     AlreadyMapped,
-    #[fail(display = "Unable to map this buffer. Must create with either the \
+    #[error("Unable to map this buffer. Must create with either the \
         MEM_USE_HOST_PTR or MEM_ALLOC_HOST_PTR flag.")]
     MapUnavailable,
-    #[fail(display = "ocl-core error: {}", _0)]
-    Ocl(#[cause] OclCoreError)
-}
-
-
-impl From<OclCoreError> for BufferCmdError {
-    fn from(err: OclCoreError) -> BufferCmdError {
-        BufferCmdError::Ocl(err)
-    }
+    #[error("ocl-core error: {}", _0)]
+    Ocl(#[from] OclCoreError)
 }
 
 

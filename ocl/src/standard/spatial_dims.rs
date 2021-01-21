@@ -3,13 +3,14 @@ use std::convert::From;
 use std::fmt::Debug;
 use std::ops::Index;
 use num_traits::{Num, ToPrimitive};
+use thiserror::Error;
 use crate::error::{Result as OclResult};
 use crate::standard::{MemLen, WorkDims};
 use crate::core::util;
 
 
-#[derive(Debug, Fail)]
-#[fail(display = "Cannot convert to a valid set of dimensions. \
+#[derive(Debug, Error)]
+#[error("Cannot convert to a valid set of dimensions. \
     Please specify some dimensions.")]
 pub struct UnspecifiedDimensionsError;
 

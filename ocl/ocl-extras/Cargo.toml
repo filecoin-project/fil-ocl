@@ -22,7 +22,7 @@ version = "0.19"
 # chrono = "0.2"
 num-traits = "0.2"
 rand = "0.4"
-failure = "0.1"
+thiserror = "1.0.23"
 
 [dependencies.futures-preview]
 version = "0.2.2"

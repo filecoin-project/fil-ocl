@@ -8,6 +8,7 @@ use std::mem;
 use std::ptr;
 use std::iter;
 use std::string::FromUtf8Error;
+use thiserror::Error;
 use num_traits::PrimInt;
 use crate::{OclPrm, OclScl};
 
@@ -69,22 +70,22 @@ pub mod colors {
 //=============================================================================
 
 /// An error caused by a utility function.
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum UtilError {
-    #[fail(display = "The size of the source byte slice ({} bytes) does not match \
+    #[error("The size of the source byte slice ({} bytes) does not match \
         the size of the destination type ({} bytes).", src, dst)]
     BytesTo { src: usize, dst: usize, },
-    #[fail(display = "The size of the source byte vector ({} bytes) does not match \
+    #[error("The size of the source byte vector ({} bytes) does not match \
         the size of the destination type ({} bytes).", src, dst)]
     BytesInto { src: usize, dst: usize, },
-    #[fail(display = "The size of the source byte vector ({} bytes) is not evenly \
+    #[error("The size of the source byte vector ({} bytes) is not evenly \
         divisible by the size of the destination type ({} bytes).", src, dst)]
     BytesIntoVec { src: usize, dst: usize, },
-    #[fail(display = "The size of the source byte slice ({} bytes) is not evenly \
+    #[error("The size of the source byte slice ({} bytes) is not evenly \
         divisible by the size of the destination type ({} bytes).", src, dst)]
     BytesToVec { src: usize, dst: usize, },
-    #[fail(display = "Unable to convert bytes into string: {}", _0)]
-    BytesIntoString(#[cause] FromUtf8Error),
+    #[error("Unable to convert bytes into string: {}", _0)]
+    BytesIntoString(#[from] FromUtf8Error),
 }
 
 /// Copies a byte slice to a new `u32`.
@@ -242,11 +243,11 @@ pub fn padded_len(len: usize, incr: usize) -> usize {
 
 
 /// An error caused by `util::vec_remove_rebuild`.
-#[derive(Fail, Debug)]
+#[derive(Debug, Error)]
 pub enum VecRemoveRebuildError {
-    #[fail(display = "Remove list is longer than source vector.")]
+    #[error("Remove list is longer than source vector.")]
     TooLong,
-    #[fail(display = "'remove_list' contains at least one out of range index: [{}] \
+    #[error("'remove_list' contains at least one out of range index: [{}] \
         ('orig_vec' length: {}).", idx, orig_len)]
     OutOfRange { idx: usize, orig_len: usize },
 }

@@ -7,16 +7,17 @@ use crate::ffi::cl_device_id;
 use crate::core::{self, util, DeviceId as DeviceIdCore, DeviceType, DeviceInfo, DeviceInfoResult, ClDeviceIdPtr};
 use crate::error::{Error as OclError, Result as OclResult};
 use crate::standard::Platform;
+use thiserror::Error;
 
 
 /// A device related error.
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum DeviceError {
-    #[fail(display = "No devices found on the specified platform.")]
+    #[error("No devices found on the specified platform.")]
     NoDevices,
-    #[fail(display = "Empty device list provided.")]
+    #[error("Empty device list provided.")]
     ResolveIdxsEmptyDeviceList,
-    #[fail(display = "An index in the resolve list is out of range (index: {}, max: {})",
+    #[error("An index in the resolve list is out of range (index: {}, max: {})",
         idx, max)]
     ResolveIdxsInvalidIndex { idx: usize, max: usize },
 }

@@ -10,7 +10,7 @@
 #![allow(dead_code)]
 
 use std::fmt;
-use failure::Fail;
+use thiserror::Error;
 use num_traits::FromPrimitive;
 use crate::util;
 use crate::ffi::{cl_image_format, cl_context_properties, c_void};
@@ -28,37 +28,37 @@ use crate::{CommandQueueProperties, PlatformId, PlatformInfo, DeviceId, DeviceIn
 use crate::error::{Result as OclCoreResult, Error as OclCoreError};
 
 
-#[derive(Fail)]
+#[derive(Error)]
 pub enum EmptyInfoResultError {
-    #[fail(display = "Platform info unavailable")]
+    #[error("Platform info unavailable")]
     Platform,
-    #[fail(display = "Device info unavailable")]
+    #[error("Device info unavailable")]
     Device,
-    #[fail(display = "Context info unavailable")]
+    #[error("Context info unavailable")]
     Context,
-    #[fail(display = "OpenGL info unavailable")]
+    #[error("OpenGL info unavailable")]
     GlContext,
-    #[fail(display = "Command queue info unavailable")]
+    #[error("Command queue info unavailable")]
     CommandQueue,
-    #[fail(display = "Mem object info unavailable")]
+    #[error("Mem object info unavailable")]
     Mem,
-    #[fail(display = "Image info unavailable")]
+    #[error("Image info unavailable")]
     Image,
-    #[fail(display = "Sampler info unavailable")]
+    #[error("Sampler info unavailable")]
     Sampler,
-    #[fail(display = "Program info unavailable")]
+    #[error("Program info unavailable")]
     Program,
-    #[fail(display = "Program build info unavailable")]
+    #[error("Program build info unavailable")]
     ProgramBuild,
-    #[fail(display = "Kernel info unavailable")]
+    #[error("Kernel info unavailable")]
     Kernel,
-    #[fail(display = "Kernel argument info unavailable")]
+    #[error("Kernel argument info unavailable")]
     KernelArg,
-    #[fail(display = "Kernel work-group info unavailable")]
+    #[error("Kernel work-group info unavailable")]
     KernelWorkGroup,
-    #[fail(display = "Event info unavailable")]
+    #[error("Event info unavailable")]
     Event,
-    #[fail(display = "Event profiling info unavailable")]
+    #[error("Event profiling info unavailable")]
     Profiling,
 }
 
@@ -1648,9 +1648,6 @@ impl From<KernelArgInfoResult> for String {
         ir.to_string()
     }
 }
-
-
-impl Fail for KernelArgInfoResult {}
 
 
 /// A kernel work group info result.
