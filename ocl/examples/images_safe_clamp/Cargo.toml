@@ -9,7 +9,7 @@ opencl_vendor_mesa = ["fil-ocl/opencl_vendor_mesa"]
 [dependencies]
 fil-ocl = { path = "../../" }
 image = "*"
-time = "*"
+time = "0.1"
 find_folder = "*"
 colorify = "*"
 
