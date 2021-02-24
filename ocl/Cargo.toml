@@ -72,4 +72,4 @@ rand = "0.4"
 chrono = "0.2"
 futures-cpupool = "0.1"
 lazy_static = "0.2"
-ocl-extras = { version = "0.1", path = "ocl-extras" }
+#ocl-extras = { version = "0.1", path = "ocl-extras" }
