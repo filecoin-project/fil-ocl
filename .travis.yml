@@ -30,4 +30,4 @@ matrix:
       install:
         - rustup component add clippy
       script:
-        - cargo clippy --verbose
+        - cargo clippy --verbose -- -W clippy::derive_ord_xor_partial_ord -W clippy::if_same_then_else -W clippy::inherent_to_string_shadow_display
