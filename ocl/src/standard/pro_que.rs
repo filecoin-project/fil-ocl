@@ -386,9 +386,9 @@ impl<'b> ProQueBuilder<'b> {
     /// A `ProgramBuilder` or some source code must have been specified with
     /// `::prog_bldr` or `::src` before building.
     ///
-    pub fn build(&self) -> OclResult<ProQue> {
+    pub fn build(&mut self) -> OclResult<ProQue> {
         let program_builder = match self.program_builder {
-            Some(ref program_builder) => program_builder,
+            Some(ref mut program_builder) => program_builder,
             None => return Err("ProQueBuilder::build(): No program builder or kernel source defined. \
                 OpenCL programs must have some source code to be compiled. Use '::src' to directly \
                 add source code or '::program_builder' for more complex builds. Please see the \
@@ -454,20 +454,8 @@ impl<'b> ProQueBuilder<'b> {
 
         let queue = Queue::new(&context, device, self.queue_properties)?;
 
-        // println!("PROQUEBUILDER: About to load SRC_STRINGS.");
-        let src_strings = program_builder.get_src_strings().map_err(|e| e.to_string())?;
-        // println!("PROQUEBUILDER: About to load CMPLR_OPTS.");
-        let cmplr_opts = program_builder.get_compiler_options().map_err(|e| e.to_string())?;
-        // println!("PROQUEBUILDER: All done.");
-
-        let program = Program::with_source(
-            &context,
-            &src_strings,
-            Some(&[device]),
-            &cmplr_opts,
-        )?;
+        let program = program_builder.devices(DeviceSpecifier::Single(device)).build(&context)?;
 
         Ok(ProQue::new(context, queue, program, self.dims))
     }
 }
-
