@@ -7,14 +7,15 @@
 use std;
 use std::ops::{Deref, DerefMut};
 use std::str::SplitWhitespace;
+use thiserror::Error;
 use crate::ffi::cl_platform_id;
 use crate::core::{self, PlatformId as PlatformIdCore, PlatformInfo, PlatformInfoResult, ClPlatformIdPtr};
 use crate::error::{Error as OclError, Result as OclResult};
 
 
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum PlatformError {
-    #[fail(display = "No platforms found.")]
+    #[error("No platforms found.")]
     NoPlatforms,
 }
 

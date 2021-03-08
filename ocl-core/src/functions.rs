@@ -20,7 +20,7 @@ use std::thread;
 use std::time::Duration;
 use std::env;
 use std::fmt;
-use failure::Fail;
+use thiserror::Error;
 use crate::ffi::{size_t, c_void};
 use num_traits::FromPrimitive;
 
@@ -161,7 +161,7 @@ impl ApiError {
     }
 }
 
-impl Fail for ApiError {}
+impl std::error::Error for ApiError {}
 
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -206,11 +206,11 @@ fn eval_errcode<T, S>(errcode: cl_int, result: T, fn_name: &'static str, fn_info
 
 
 /// An OpenCL program build error.
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum ProgramBuildError {
-    #[fail(display = "Device list is empty. Aborting build.")]
+    #[error("Device list is empty. Aborting build.")]
     DeviceListEmpty,
-    #[fail(display =
+    #[error(
         "\n\n\
         ###################### OPENCL PROGRAM BUILD DEBUG OUTPUT \
         ######################\
@@ -221,7 +221,7 @@ pub enum ProgramBuildError {
         _0
     )]
     BuildLog(String),
-    #[fail(display = "{}", _0)]
+    #[error("{}", _0)]
     InfoResult(Box<OclCoreError>),
 }
 
@@ -283,8 +283,8 @@ pub(crate) enum VersionKind {
 
 
 /// A version too low error.
-#[derive(Debug, Fail)]
-#[fail(display = "OpenCL ({:?}) version too low to use {:?} (detected: {}, required: {}).",
+#[derive(Debug, Error)]
+#[error("OpenCL ({:?}) version too low to use {:?} (detected: {}, required: {}).",
     kind, function, detected, required)]
 pub struct VersionLowError {
     detected: OpenclVersion,
@@ -295,36 +295,36 @@ pub struct VersionLowError {
 
 
 /// An error representing miscellaneous errors from throughout this module.
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum ApiWrapperError {
-    #[fail(display = "Unable to get platform id list after {} seconds of waiting.", _0)]
+    #[error("Unable to get platform id list after {} seconds of waiting.", _0)]
     GetPlatformIdsPlatformListUnavailable(u64),
-    #[fail(display = "`devices_max` can not be zero.")]
+    #[error("`devices_max` can not be zero.")]
     GetDeviceIdsDevicesMaxZero,
-    #[fail(display = "No devices specified.")]
+    #[error("No devices specified.")]
     CreateContextNoDevicesSpecified,
-    #[fail(display = "Buffer length and data length and do not match.")]
+    #[error("Buffer length and data length and do not match.")]
     CreateBufferDataLengthMismatch,
-    #[fail(display = "One or more of the devices contained in the list provided to \
+    #[error("One or more of the devices contained in the list provided to \
         '::create_context` doesn't support the cl_gl_sharing extension and cannot be \
         used to create a context associated with OpenGL. [FIXME: determine recommended \
         resolution - gl_device list fn doesn't work yet].")]
     CreateContextClGlSharingUnsupported,
-    #[fail(display = "Length of 'devices' must be greater than zero.")]
+    #[error("Length of 'devices' must be greater than zero.")]
     CreateProgramWithBinaryDevicesLenZero,
-    #[fail(display = "Length of 'devices' must equal the length of 'binaries' \
+    #[error("Length of 'devices' must equal the length of 'binaries' \
         (e.g. one binary per device).")]
     CreateProgramWithBinaryDevicesLenMismatch,
-    #[fail(display = "The specified function does not exist for the implementation or \
+    #[error("The specified function does not exist for the implementation or \
         'platform' is not a valid platform.")]
     GetExtensionFunctionAddressForPlatformInvalidFunction,
-    #[fail(display = "No OpenCL platforms found. Check your driver.")]
+    #[error("No OpenCL platforms found. Check your driver.")]
     DefaultPlatformNoPlatforms,
-    #[fail(display = "The default platform set by the environment variable \
+    #[error("The default platform set by the environment variable \
         'OCL_DEFAULT_PLATFORM_IDX' has an index which is out of range \
         (index: [{}], max: [{}]).", default_platform_idx, max_idx)]
     DefaultPlatformEnvVarBadIdx { default_platform_idx: usize, max_idx: usize },
-    #[fail(display = "The default device type set by the environment variable \
+    #[error("The default device type set by the environment variable \
         'OCL_DEFAULT_DEVICE_TYPE': ('{}') is invalid. Valid types are: 'DEFAULT', 'CPU', \
         'GPU', 'ACCELERATOR', 'CUSTOM', and 'ALL'.", _0)]
     DefaultDeviceTypeInvalidType(String),

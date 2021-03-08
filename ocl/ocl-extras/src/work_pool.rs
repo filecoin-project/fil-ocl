@@ -9,27 +9,16 @@ use futures::stream::FuturesUnordered;
 use futures::task::{Context, Waker, LocalMap, Wake};
 use futures::executor::{enter, Executor, SpawnError, ThreadPool};
 use futures::channel::mpsc::{self, Sender};
+use thiserror::Error;
 
 
 /// An error associated with `WorkPool`.
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum WorkPoolError {
-    #[fail(display = "{}", _0)]
-    StdIo(#[cause] ::std::io::Error),
-    #[fail(display = "{}", _0)]
-    FuturesMpscSend(#[cause] ::futures::channel::mpsc::SendError),
-}
-
-impl From<::std::io::Error> for WorkPoolError {
-    fn from(err: ::std::io::Error) -> WorkPoolError {
-        WorkPoolError::StdIo(err)
-    }
-}
-
-impl From<::futures::channel::mpsc::SendError> for WorkPoolError {
-    fn from(err: ::futures::channel::mpsc::SendError) -> WorkPoolError {
-        WorkPoolError::FuturesMpscSend(err)
-    }
+    #[error("{}", _0)]
+    StdIo(#[from] ::std::io::Error),
+    #[error("{}", _0)]
+    FuturesMpscSend(#[from] ::futures::channel::mpsc::SendError),
 }
 
 
